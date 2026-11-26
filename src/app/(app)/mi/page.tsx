@@ -82,7 +82,7 @@ export default async function MiPage({ searchParams }: MiPageProps) {
             : "Todavía no hay un periodo asignado a tu cuenta."
         }
         actions={
-          <Badge variant="outline" className="h-8 gap-1.5 px-2.5">
+          <Badge variant="outline" className="hidden h-8 gap-1.5 px-2.5 sm:inline-flex">
             <CalendarDays className="size-3.5" />
             {periodoActivo?.nombre ?? "Sin periodo"}
           </Badge>

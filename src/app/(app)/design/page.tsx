@@ -148,21 +148,29 @@ export default function DesignPage() {
             Altura mínima de 36–44 px en móvil. La acción principal siempre es oliva.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Button>
+            <Button className="h-9">
               <Plus className="size-4" />
               Registrar pago
             </Button>
-            <Button variant="secondary">Editar cuota</Button>
-            <Button variant="outline">
+            <Button variant="secondary" className="h-9">
+              Editar cuota
+            </Button>
+            <Button variant="outline" className="h-9">
               <Search className="size-4" />
               Buscar
             </Button>
-            <Button variant="ghost">Cancelar</Button>
-            <Button variant="destructive">Eliminar</Button>
-            <Button variant="link">
+            <Button variant="ghost" className="h-9">
+              Cancelar
+            </Button>
+            <Button variant="destructive" className="h-9">
+              Eliminar
+            </Button>
+            <Button variant="link" className="h-9">
               Ver detalle <ArrowRight className="size-3.5" />
             </Button>
-            <Button disabled>Deshabilitado</Button>
+            <Button disabled className="h-9">
+              Deshabilitado
+            </Button>
           </div>
           <Separator className="my-4" />
           <h4 className="text-sm font-medium">Estados de pago</h4>
@@ -186,7 +194,7 @@ export default function DesignPage() {
         </section>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid items-start gap-4 lg:grid-cols-[1.4fr_1fr]">
         <section className="rounded-xl bg-card p-4 ring-1 ring-border sm:p-5">
           <h3 className="font-heading text-lg font-semibold">Matriz de ahorros</h3>
           <p className="text-xs text-muted-foreground">

@@ -47,6 +47,6 @@ test("el sistema de diseño es accesible con sesión", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin$/);
   await page.goto("/design");
 
-  await expect(page.getByRole("heading", { name: "Sistema de diseño" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sistema de diseño", level: 2 })).toBeVisible();
   await expect(page.getByText("Paleta")).toBeVisible();
 });

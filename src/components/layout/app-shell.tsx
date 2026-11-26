@@ -94,7 +94,7 @@ export function AppShell({ role, userName, username, periods, children }: AppShe
 
   const mainNav = role === "admin" ? adminNav : socioNav;
   const footerNav = role === "admin" ? adminFooterNav : [];
-  const allNav = useMemo(() => [...mainNav, ...footerNav], [mainNav, footerNav]);
+  const allNav = useMemo(() => [...mainNav, ...footerNav, disenoNav], [mainNav, footerNav]);
 
   const current = allNav
     .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
