@@ -209,6 +209,7 @@ Verificar siempre contra el documento de requisitos antes de implementar.
 - No usar `searchParams` sincrónicos en Next 15: siempre `await searchParams`.
 - El selector de periodo usa el query param `?periodo=<id>`; las páginas deben leerlo y caer al periodo activo.
 - Windows: las rutas con paréntesis (`(app)`, `(auth)`) requieren comillas al usar comandos de shell.
+- **No ejecutar `npm run build` con el servidor de desarrollo activo**: ambos escriben en `.next` y en Windows se corrompe el manifiesto de desarrollo. Detener `npm run dev`, borrar `.next` y reiniciar.
 - Si `npm run test:e2e` falla por navegadores faltantes: `npx playwright install chromium`.
 
 ## 12. Siguiente paso (Sprint 1)
