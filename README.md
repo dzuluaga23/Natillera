@@ -34,7 +34,8 @@ Aplicación web mobile-first para administrar una natillera: ahorros y mora, pol
 
 ```bash
 npm install
-cp .env.example .env.local    # completar credenciales
+copy .env.example .env.local   # Windows
+cp .env.example .env.local     # macOS / Linux
 npm run db:migrate
 npm run db:seed
 npm run dev

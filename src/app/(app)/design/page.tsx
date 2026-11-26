@@ -98,7 +98,10 @@ export default function DesignPage() {
         <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {paleta.map((color) => (
             <div key={color.token} className="overflow-hidden rounded-xl ring-1 ring-border">
-              <div className="h-14 w-full" style={{ background: color.hex }} />
+              <div
+                className="h-14 w-full border-b border-border/60"
+                style={{ background: color.hex }}
+              />
               <div className="bg-background/60 p-2.5">
                 <p className="text-sm font-medium">{color.nombre}</p>
                 <p className="money text-[11px] text-muted-foreground">
