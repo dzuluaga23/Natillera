@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { etiquetaRol } from "@/lib/permissions";
+import { SPRINT_ACTUAL } from "@/lib/sprint";
 import { cn } from "@/lib/utils";
 
 type AppShellProps = {
@@ -265,7 +266,7 @@ export function AppShell({ role, userName, username, periods, children }: AppShe
           <div className="flex items-center gap-2 border-t border-border/60 px-4 py-2 sm:hidden">
             <PeriodSelector periods={periods} selectedId={selectedPeriodId} compact />
             <Badge variant="outline" className="ml-auto text-[10px]">
-              Sprint 0
+              {SPRINT_ACTUAL.nombre}
             </Badge>
           </div>
         </header>
@@ -277,7 +278,9 @@ export function AppShell({ role, userName, username, periods, children }: AppShe
             <PanelLeftClose className="size-3" />
             NatilleraApp · Periodo dic–nov · COP
           </span>
-          <span>Sprint 0 · Fundaciones</span>
+          <span>
+            {SPRINT_ACTUAL.nombre} · {SPRINT_ACTUAL.descripcion}
+          </span>
         </footer>
       </div>
     </div>
