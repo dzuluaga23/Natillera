@@ -34,7 +34,6 @@ export const adminNav: NavItem[] = [
     label: "Socios",
     icon: Users,
     description: "Personas, número de polla y retiros",
-    soon: true,
   },
   {
     href: "/admin/ahorros",
