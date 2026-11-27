@@ -129,6 +129,7 @@ e2e/                      Pruebas Playwright
 
 ## Reglas de negocio implementadas
 
+- **Socios:** alta, edición, retiro y baja del periodo con auditoría. El número de polla se elige con un selector 00–99 que marca los ocupados; el retiro conserva el número y la baja lo libera sin borrar el historial.
 - **Números de polla:** cada socio elige un número del **00 al 99**. No son consecutivos ni dependen de la cantidad de socios: con 25 socios hay 25 ocupados y 75 libres. Un número es único por periodo y siempre se guarda con dos cifras (`7` → `07`).
 - Cálculo de mora sugerida: hasta el día 20 `$0`; días 21–23 `$5.000`; desde el 24, `$5.000 + $1.000` por día adicional.
 - Cálculo de los 12 meses del periodo (diciembre–noviembre) con día de pago configurable.

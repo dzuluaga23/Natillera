@@ -29,6 +29,7 @@ Aplicación web **mobile-first**, en **español**, para administrar una natiller
 - Better Auth con usuario/contraseña (sin registro público).
 - Shell responsive, login, panel admin, resumen de socio y páginas "Pronto" para cada módulo pendiente.
 - **Padrón de polla 00–99** con validación de formato y unicidad, semilla con números dispersos y vistas para admin y socio.
+- **CRUD de socios del periodo** con selector de número, retiro, baja lógica y auditoría de cada cambio.
 - Página `/design` con paleta, tipografía y componentes.
 - Pruebas unitarias de dinero, periodos, mora y números de polla + smoke tests E2E.
 - CI de GitHub Actions y documentación.
@@ -216,9 +217,9 @@ Verificar siempre contra el documento de requisitos antes de implementar.
 
 ## 12. Siguiente paso (Sprint 1)
 
-Hecho ya en este bloque: padrón de polla 00–99 (dominio, `CHECK` en base, semilla dispersa, vistas de admin y socio, tests). Falta:
+Hecho ya en este bloque: padrón de polla 00–99 (dominio, `CHECK` en base, semilla dispersa, vistas de admin y socio, tests) y CRUD de socios del periodo con selector de número, retiro y baja lógica. Falta:
 
-1. CRUD de socios con selector de número 00–99 (ocupados/libres), retiro y soft delete.
+1. Restauración de socios desde la papelera y eliminación global del registro.
 2. Configuración del periodo editable.
 3. Matriz de ahorros editable con pagos, mora sugerida/override y estados.
 4. Gestión de administradores y usuarios (máx. 3 admins, mínimo 1, contraseña temporal).
