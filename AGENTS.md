@@ -22,25 +22,26 @@ Aplicación web **mobile-first**, en **español**, para administrar una natiller
 
 ## 2. Estado actual
 
-**Sprint 0 completado.** Existe:
+**Sprint 0 completado y base de datos en Supabase.** Existe:
 
-- Esquema de base de datos y migración inicial aplicada.
+- Esquema de base de datos y migraciones aplicadas en **Supabase PostgreSQL**.
 - Semilla demo idempotente con 2 periodos, 25 socios y 2 usuarios.
 - Better Auth con usuario/contraseña (sin registro público).
-- Shell responsive, login, panel admin, resumen de socio y páginas "Pronto" para cada módulo.
+- Shell responsive, login, panel admin, resumen de socio y páginas "Pronto" para cada módulo pendiente.
+- **Padrón de polla 00–99** con validación de formato y unicidad, semilla con números dispersos y vistas para admin y socio.
 - Página `/design` con paleta, tipografía y componentes.
-- Pruebas unitarias de dinero, periodos y mora + smoke tests E2E.
+- Pruebas unitarias de dinero, periodos, mora y números de polla + smoke tests E2E.
 - CI de GitHub Actions y documentación.
 
-Los módulos de negocio están marcados con `soon: true` en `src/components/layout/nav-items.ts` y no tienen lógica todavía.
+Los módulos aún no implementados están marcados con `soon: true` en `src/components/layout/nav-items.ts`.
 
-| Sprint | Alcance                                              | Estado       |
-| ------ | ---------------------------------------------------- | ------------ |
-| 0      | Fundaciones                                          | ✅           |
-| 1      | Socios, configuración, ahorros/mora, administradores | ⏳ siguiente |
-| 2      | Polla y rifas                                        | ⏳           |
-| 3      | Préstamos y banco/conciliación                       | ⏳           |
-| 4      | Liquidación, PDF, auditoría, exportaciones           | ⏳           |
+| Sprint | Alcance                                              | Estado      |
+| ------ | ---------------------------------------------------- | ----------- |
+| 0      | Fundaciones                                          | ✅          |
+| 1      | Socios, configuración, ahorros/mora, administradores | 🔄 en curso |
+| 2      | Polla (sorteos) y rifas                              | ⏳          |
+| 3      | Préstamos y banco/conciliación                       | ⏳          |
+| 4      | Liquidación, PDF, auditoría, exportaciones           | ⏳          |
 
 ## 3. Stack y decisiones
 
@@ -74,13 +75,13 @@ Antes de cerrar cualquier tarea: `npm run lint && npm run typecheck && npm run t
 
 ## 5. Entorno y base de datos
 
-- Desarrollo local en **Windows**, sin Docker disponible. Se usa el servicio **PostgreSQL 18** instalado.
-- Base local: `natillera`, rol `natillera_app`. La contraseña y la URL completa están en `.env.local` (no versionado).
-- `.env.local` también define `BETTER_AUTH_SECRET`, URLs y credenciales de la semilla.
-- En producción se usará **Supabase PostgreSQL**:
-  - `DATABASE_URL` = pooler transaction (puerto 6543, con `?pgbouncer=true`).
-  - `DIRECT_URL` = conexión directa (puerto 5432) para migraciones.
-  - El cliente ya usa `prepare: false`, necesario para el pooler.
+- Desarrollo en **Windows**. La base de datos definitiva es **Supabase PostgreSQL** (proyecto `moazteypzheyuvylirbm`, región `us-east-1`).
+- `DATABASE_URL` = **transaction pooler** (puerto 6543, usuario `postgres.<ref>`) para la app.
+- `DIRECT_URL` = **session pooler** (puerto 5432, mismo host del pooler) para migraciones. Evita la conexión directa `db.<ref>.supabase.co`, que en este equipo es solo IPv6.
+- `.env.local` contiene las cadenas completas y también `BETTER_AUTH_SECRET`, URLs y credenciales de la semilla. No se versiona.
+- El cliente usa `prepare: false`, necesario para el pooler.
+- **No hay RLS de Supabase**: la autenticación es Better Auth y el aislamiento por socio se aplica en el servidor.
+- Un PostgreSQL local solo se usa como respaldo si Supabase no está disponible; no es la fuente de verdad.
 - **Nunca** versionar `.env.local` ni secretos. `.env.example` solo lleva placeholders.
 
 ### Semilla demo
@@ -116,6 +117,7 @@ src/lib
   money.ts              → formato y parseo COP
   periods.ts            → cálculo de los 12 meses, último viernes, atrasos
 src/modules/<modulo>/domain → reglas puras y testeables
+src/modules/polla        → números 00–99, validación y padrón
 ```
 
 ### Sesión y autorización
@@ -178,7 +180,7 @@ Verificar siempre contra el documento de requisitos antes de implementar.
 
 - **Ahorro:** matriz socios × 12 meses. Cuota editable por socio y por mes.
 - **Mora:** solo sobre ahorro. Hasta el día 20 → `$0`; 21–23 → `$5.000`; desde el 24 → `$5.000 + $1.000` por cada día después del 23. Editable por el admin.
-- **Polla:** `$10.000`/mes por socio. Sorteo el último viernes con las 2 últimas cifras de la Lotería de Medellín. Si cae el número de un socio al día: premio = mitad del recaudo; la otra mitad se reparte. Si no cae o el ganador no está al día: todo el recaudo se reparte. El ganador moroso igual debe pagar.
+- **Polla:** cada socio **elige su número del 00 al 99**. No son consecutivos ni dependen de la cantidad de socios: con 25 socios hay 25 ocupados y 75 libres. El número es único por periodo, se guarda con dos cifras (`7` → `07`) y la base lo exige con `CHECK (numero_polla ~ '^[0-9]{2}$')`. Aporte de `$10.000`/mes por socio. Sorteo el último viernes con las 2 últimas cifras de la Lotería de Medellín. Si cae el número de un socio al día: premio = mitad del recaudo; la otra mitad se reparte. Si no cae o el ganador no está al día: todo el recaudo se reparte. El ganador moroso igual debe pagar.
 - **Rifas:** 100 números (00–99), sin repetir. 4 boletas por socio con 25 socios (su número de polla + 3). Cada socio responde por sus boletas. Ganancia de la rifa se reparte por igual. Sobrantes se asignan a mano.
 - **Préstamos:** interés sugerido 5% mensual sobre saldo de capital, editable. Abonos libres. Interés cobrado = ganancia común.
 - **Ganancias comunes:** mora + mitad/no premiada de polla + ganancia de rifas + intereses. Se dividen por igual entre socios **activos hasta el final**.
@@ -196,7 +198,7 @@ Verificar siempre contra el documento de requisitos antes de implementar.
 
 ## 10. Git
 
-- Repositorio local; **no hay remoto**. No hacer push.
+- Remoto: `origin` = <https://github.com/dzuluaga23/Natillera.git>. Se hace push a `main`.
 - Commits atómicos en español, convención `tipo(alcance): descripción` (`feat`, `fix`, `chore`, `docs`, `test`, `refactor`).
 - Tags por sprint: `sprint-0`, `sprint-1`, …
 - No commitear `.env.local`, `node_modules`, `.next`, `playwright-report`, `test-results`.
@@ -214,7 +216,9 @@ Verificar siempre contra el documento de requisitos antes de implementar.
 
 ## 12. Siguiente paso (Sprint 1)
 
-1. CRUD de socios y asignación de números de polla (con validación de unicidad y soft delete).
+Hecho ya en este bloque: padrón de polla 00–99 (dominio, `CHECK` en base, semilla dispersa, vistas de admin y socio, tests). Falta:
+
+1. CRUD de socios con selector de número 00–99 (ocupados/libres), retiro y soft delete.
 2. Configuración del periodo editable.
 3. Matriz de ahorros editable con pagos, mora sugerida/override y estados.
 4. Gestión de administradores y usuarios (máx. 3 admins, mínimo 1, contraseña temporal).
