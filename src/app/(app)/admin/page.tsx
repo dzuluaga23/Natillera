@@ -1,4 +1,4 @@
-import { and, count, desc, eq, isNull, sql, sum } from "drizzle-orm";
+import { and, count, eq, isNull, sql, sum } from "drizzle-orm";
 import {
   ArrowRight,
   BellRing,
@@ -18,10 +18,12 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db";
-import { configuracionPeriodo, periodoSocios, periodos, user } from "@/db/schema";
+import { configuracionPeriodo, periodoSocios, user } from "@/db/schema";
 import { formatCOP, formatNumber } from "@/lib/money";
+import { cargarPeriodoSeleccionado } from "@/lib/periodo-seleccionado";
 import { formatFechaLarga } from "@/lib/periods";
 import { requireAdmin } from "@/lib/session";
+import { TOTAL_NUMEROS_POLLA } from "@/modules/polla/domain/numero-polla";
 
 export const metadata: Metadata = {
   title: "Panel administrador",
@@ -34,17 +36,7 @@ type AdminPageProps = {
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const session = await requireAdmin();
   const { periodo: periodoId } = await searchParams;
-
-  const listaPeriodos = await db
-    .select()
-    .from(periodos)
-    .where(isNull(periodos.deletedAt))
-    .orderBy(desc(periodos.fechaInicio));
-
-  const periodoActivo =
-    listaPeriodos.find((periodo) => periodo.id === periodoId) ??
-    listaPeriodos.find((periodo) => periodo.estado === "activo") ??
-    listaPeriodos[0];
+  const { periodo: periodoActivo } = await cargarPeriodoSeleccionado(periodoId);
 
   const [config] = periodoActivo
     ? await db
@@ -78,9 +70,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     .from(user)
     .where(isNull(user.deletedAt));
 
+  const [resumenPolla] = periodoActivo
+    ? await db
+        .select({ ocupados: count() })
+        .from(periodoSocios)
+        .where(and(eq(periodoSocios.periodoId, periodoActivo.id), isNull(periodoSocios.deletedAt)))
+    : [{ ocupados: 0 }];
+
   const sociosActivos = Number(resumenSocios?.socios ?? 0);
   const cuotaTotal = Number(resumenSocios?.cuotaTotal ?? 0);
   const admins = Number(resumenUsuarios?.admins ?? 0);
+  const numerosOcupados = Number(resumenPolla?.ocupados ?? 0);
 
   const modulos = adminNav.filter((item) => item.href !== "/admin");
 
@@ -123,7 +123,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           value={formatNumber(sociosActivos)}
           hint={
             periodoActivo
-              ? `Números de polla 00–${String(Math.max(sociosActivos - 1, 0)).padStart(2, "0")}`
+              ? `${formatNumber(numerosOcupados)} de ${TOTAL_NUMEROS_POLLA} números de polla ocupados`
               : "Sin periodo"
           }
           icon={Users}
@@ -163,7 +163,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 Cada módulo se habilita en su sprint, con datos reales.
               </p>
             </div>
-            <Badge variant="outline">Sprint 0</Badge>
+            <Badge variant="outline">Sprint 1</Badge>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2">
@@ -211,10 +211,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </section>
 
           <section className="rounded-xl bg-card p-4 ring-1 ring-border sm:p-5">
-            <h3 className="font-heading text-base font-semibold">Fundaciones listas</h3>
+            <h3 className="font-heading text-base font-semibold">Base lista</h3>
             <ul className="mt-3 space-y-2 text-sm">
               {[
-                "Base de datos y migraciones",
+                "Base de datos en Supabase",
                 "Acceso por usuario y contraseña",
                 "Diseño beige, marrón y oliva",
                 "Auditoría y papelera preparadas",

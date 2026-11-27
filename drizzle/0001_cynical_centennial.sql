@@ -1,0 +1,1 @@
+ALTER TABLE "periodo_socios" ADD CONSTRAINT "periodo_socios_numero_polla_formato" CHECK ("periodo_socios"."numero_polla" ~ '^[0-9]{2}$');

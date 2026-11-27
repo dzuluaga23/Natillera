@@ -33,7 +33,7 @@ export const adminNav: NavItem[] = [
     href: "/admin/socios",
     label: "Socios",
     icon: Users,
-    description: "Personas, números de polla y retiros",
+    description: "Personas, número de polla y retiros",
     soon: true,
   },
   {
@@ -47,8 +47,7 @@ export const adminNav: NavItem[] = [
     href: "/admin/polla",
     label: "Polla",
     icon: CircleDollarSign,
-    description: "Sorteos, ganadores y premios",
-    soon: true,
+    description: "Padrón 00–99, sorteos y premios",
   },
   {
     href: "/admin/rifas",
@@ -112,8 +111,7 @@ export const socioNav: NavItem[] = [
     href: "/mi/polla",
     label: "Polla general",
     icon: CircleDollarSign,
-    description: "Números, resultados y ganadores",
-    soon: true,
+    description: "Los 100 números y quién los eligió",
   },
   {
     href: "/mi/liquidacion",

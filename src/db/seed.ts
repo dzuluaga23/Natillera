@@ -35,6 +35,38 @@ const NOMBRES_DEMO = [
 
 const CUOTA_AHORRO_DEMO = 50_000;
 
+/**
+ * Números de polla demo: dispersos y elegidos, no consecutivos.
+ * El padrón va de 00 a 99; nadie "hereda" el consecutivo de la lista de socios.
+ */
+const NUMEROS_POLLA_DEMO = [
+  "03",
+  "07",
+  "11",
+  "16",
+  "22",
+  "28",
+  "31",
+  "35",
+  "41",
+  "44",
+  "47",
+  "53",
+  "58",
+  "61",
+  "66",
+  "72",
+  "77",
+  "81",
+  "85",
+  "89",
+  "92",
+  "94",
+  "96",
+  "98",
+  "99",
+];
+
 type Credenciales = {
   username: string;
   password: string;
@@ -89,6 +121,10 @@ async function main() {
   }
 
   async function asegurarSociosYAsignaciones(periodoId: string) {
+    if (NUMEROS_POLLA_DEMO.length !== NOMBRES_DEMO.length) {
+      throw new Error("La semilla necesita un número de polla por cada socio demo.");
+    }
+
     for (const [indice, nombre] of NOMBRES_DEMO.entries()) {
       const [existenteSocio] = await db
         .select()
@@ -106,7 +142,7 @@ async function main() {
         socio = creado;
       }
 
-      const numeroPolla = String(indice).padStart(2, "0");
+      const numeroPolla = NUMEROS_POLLA_DEMO[indice];
       const [asignacion] = await db
         .select()
         .from(schema.periodoSocios)
@@ -129,7 +165,7 @@ async function main() {
       }
     }
 
-    console.log(`  · ${NOMBRES_DEMO.length} socios asegurados con números 00-24`);
+    console.log(`  · ${NOMBRES_DEMO.length} socios asegurados con 25 de los 100 números`);
   }
 
   async function crearUsuario(credenciales: Credenciales) {

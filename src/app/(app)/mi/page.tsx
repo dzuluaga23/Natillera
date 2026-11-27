@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import {
   ArrowRight,
   CalendarDays,
@@ -17,8 +17,9 @@ import { socioNav } from "@/components/layout/nav-items";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { db } from "@/db";
-import { periodoSocios, periodos, socios } from "@/db/schema";
+import { periodoSocios, socios } from "@/db/schema";
 import { formatCOP } from "@/lib/money";
+import { cargarPeriodoSeleccionado } from "@/lib/periodo-seleccionado";
 import { MESES_PERIODO } from "@/lib/periods";
 import { requireSocio } from "@/lib/session";
 import { cn } from "@/lib/utils";
@@ -34,17 +35,7 @@ type MiPageProps = {
 export default async function MiPage({ searchParams }: MiPageProps) {
   const session = await requireSocio();
   const { periodo: periodoId } = await searchParams;
-
-  const listaPeriodos = await db
-    .select()
-    .from(periodos)
-    .where(isNull(periodos.deletedAt))
-    .orderBy(desc(periodos.fechaInicio));
-
-  const periodoActivo =
-    listaPeriodos.find((periodo) => periodo.id === periodoId) ??
-    listaPeriodos.find((periodo) => periodo.estado === "activo") ??
-    listaPeriodos[0];
+  const { periodo: periodoActivo } = await cargarPeriodoSeleccionado(periodoId);
 
   const asignacion = session.user.socioId
     ? (
@@ -107,7 +98,7 @@ export default async function MiPage({ searchParams }: MiPageProps) {
             <StatCard
               label="Número de polla"
               value={asignacion.numeroPolla}
-              hint={periodoActivo?.nombre ?? "Periodo actual"}
+              hint="Elegido por ti para este periodo"
               icon={CircleDollarSign}
               tone="brown"
             />

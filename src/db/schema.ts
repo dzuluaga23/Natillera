@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  check,
   date,
   index,
   integer,
@@ -56,6 +57,7 @@ export const periodoSocios = pgTable(
     socioId: uuid("socio_id")
       .notNull()
       .references(() => socios.id, { onDelete: "restrict" }),
+    /** Número elegido por el socio: siempre dos cifras, de "00" a "99". */
     numeroPolla: text("numero_polla").notNull(),
     cuotaAhorro: bigint("cuota_ahorro", { mode: "number" }).notNull().default(0),
     /** activo | retirado */
@@ -75,6 +77,7 @@ export const periodoSocios = pgTable(
       .on(table.periodoId, table.socioId)
       .where(sql`${table.deletedAt} is null`),
     index("periodo_socios_periodo_idx").on(table.periodoId),
+    check("periodo_socios_numero_polla_formato", sql`${table.numeroPolla} ~ '^[0-9]{2}$'`),
   ],
 );
 
